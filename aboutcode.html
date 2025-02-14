@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>通報番号表</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+}
+
+.report-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  color: #333;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.breadcrumb {
+  color: #888;
+  font-style: italic;
+}
+
+.elements ul {
+  padding-left: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+ul ul {
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 5px;
+}
+
+li > ul > li {
+  margin-bottom: 0;
+}
+</style>
+</head>
+<body>
+  <div class="report-container">
+    <h1>通報表</h1>
+
+    <section class="section">
+      <h2>スパム</h2>
+      <div class="breadcrumb">breadcrumbs: [3, 79]</div>
+    </section>
+
+    <section class="section">
+      <h2>攻撃またはハラスメント</h2>
+      <ul>
+        <li>私または他人に対する言葉での嫌がらせ <span class="breadcrumb">breadcrumbs: [3, 57, 82]</span></li>
+        <li>無礼、卑猥、または攻撃的な言葉遣い <span class="breadcrumb">breadcrumbs: [3, 57, 83]</span></li>
+        <li>アイデンティティや弱みを理由としたヘイトを助長している <span class="breadcrumb">breadcrumbs: [3, 57, 86]</span></li>
+        <li>
+          露骨な表現、残酷なコンテンツ、望んでない性的コンテンツ
+          <ul>
+            <li>ゴア（流血）、動物虐待、他人にショックを与えることを意図した暴力的なコンテンツ <span class="breadcrumb">breadcrumbs: [3, 57, 66, 87]</span></li>
+            <li>成人を描いた、望んでいない性的画像 <span class="breadcrumb">breadcrumbs: [3, 57, 66, 88]</span></li>
+            <li>成人を描いた侮辱的なポルノ <span class="breadcrumb">breadcrumbs: [3, 57, 66, 89]</span></li>
+            <li>リベンジポルノ、またはリベンジポルノを共有するという脅し <span class="breadcrumb">breadcrumbs: [3, 57, 66, 90]</span></li>
+            <li>
+              未成年者の関わる性的コンテンツまたは性的行為
+              <ul>
+                <li>未成年者を性的に扱うイラスト（「ロリコン」、「ショタコン」、「幼獣ポルノ」など） <span class="breadcrumb">breadcrumbs: [3, 57, 66, 68, 91]</span></li>
+                <li>未成年者について性的な話をしている人物がいる <span class="breadcrumb">breadcrumbs: [3, 57, 66, 68, 92]</span></li>
+                <li>未成年者に性的な示唆を含む、または性的なメッセージを送っている人物がいる <span class="breadcrumb">breadcrumbs: [3, 57, 68, 93]</span></li>
+                <li>未成年者が性的なメッセージを投稿または送信している <span class="breadcrumb">breadcrumbs: [3, 57, 68, 94]</span></li>
+                <li>現実の子供に対する性的虐待の写真または動画 <span class="breadcrumb">breadcrumbs: [3, 57, 68, 95]</span></li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>別のアカウントを作ってBANまたはブロックを回避している</h2>
+      <ul>
+        <li>別のDiscordサーバーを攻撃すると脅している <span class="breadcrumb">breadcrumbs: [3, 57, 74, 108]</span></li>
+        <li>なぜか項目が消えてしまったためこの先は不明</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>有害な誤情報または暴力の是認</h2>
+      <ul>
+        <li>
+          誤情報または陰謀論を広めている
+          <ul>
+            <li>自分または知人について悪口を言っている <span class="breadcrumb">breadcrumbs: [3, 75, 76, 82]</span></li>
+            <li>フェイクニュースや有害な陰謀論を広めている <span class="breadcrumb">breadcrumbs: [3, 75, 76, 112]</span></li>
+          </ul>
+        </li>
+        <li>暴力行為を賛美または美化している <span class="breadcrumb">breadcrumbs: [3, 75, 97]</span></li>
+        <li>アイデンティティや弱みを理由としたヘイトを助長している <span class="breadcrumb">breadcrumbs: [3, 75, 86]</span></li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>個人を特定できる情報を晒している</h2>
+      <div class="breadcrumb">breadcrumbs: [3, 60, 7]</div>
+      <div class="elements">
+        <ul>
+          <li>physical_address //住所または職場の住所</li>
+          <li>phone_info //電話番号</li>
+          <li>credit_info //クレジットカード情報</li>
+          <li>email_address //メールアドレス</li>
+          <li>legal_name //実名</li>
+          <li>ip_address //IPアドレス</li>
+          <li>face_pic //顔写真</li>
+          <li>revenge_porn //プライベート性の高い写真</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>その他</h2>
+      <ul>
+        <li>
+          Discordを使える最低年齢に達していない
+          <ul>
+            <li>はい、このメッセージ内で年齢を宣言しています <span class="breadcrumb">breadcrumbs: [3, 61, 71, 106]</span></li>
+            <li>いいえ、このメッセージ内で年齢を宣言していません 通報不可能</li>
+          </ul>
+        </li>
+        <li>
+          自傷行為または自殺に言及している
+          <ul>
+            <li>自傷行為を計画しているのではないかと懸念される <span class="breadcrumb">breadcrumbs: [3, 61, 73, 113]</span></li>
+            <li>他者に自傷行為を行うように促している <span class="breadcrumb">breadcrumbs: [3, 61, 73, 107]</span></li>
+          </ul>
+        </li>
+        <li>
+          BAN回避、レイド、別アカウントの使用
+          <ul>
+            <li>別のDiscordサーバーを攻撃すると脅している <span class="breadcrumb">breadcrumbs: [3, 61, 74, 108]</span></li>
+            <li>現行のレイドを宣言または奨励している <span class="breadcrumb">breadcrumbs: [3, 61, 74, 109]</span></li>
+            <li>BANされているにも関わらず再度サーバーに参加した <span class="breadcrumb">breadcrumbs: [3, 61, 74, 110]</span></li>
+            <li>ブロックしたにもかかわらずメッセージを送ってきている <span class="breadcrumb">breadcrumbs: [3, 61, 74, 111]</span></li>
+          </ul>
+        </li>
+        <li>有害な誤情報または暴力の是認 <span class="breadcrumb">前にもあったため省略します</span></li>
+        <li>なりすまし、欺瞞、詐欺 <span class="breadcrumb">使わないので省略</span></li>
+        <li>盗まれたアカウントやクレジットカードを配っている <span class="breadcrumb">breadcrumbs: [3, 61, 102]</span></li>
+        <li>ドラックやその他の既製品を販売している <span class="breadcrumb">breadcrumbs: [3, 61, 103]</span></li>
+        <li>ハック、チート、フィッシング、またはその他の悪意のあるリンク <span class="breadcrumb">breadcrumbs: [3, 61, 105]</span></li>
+      </ul>
+    </section>
+  </div>
+</body>
+</html>
