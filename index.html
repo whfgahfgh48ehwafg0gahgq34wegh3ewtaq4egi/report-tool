@@ -347,7 +347,7 @@ phone_info"></textarea>
 
     document.getElementById('fetchUserIds').addEventListener('click', async function() {
       const tokens = document.getElementById('token').value.trim().split('\n');
-      const token = tokens[0]; // Use the first token
+      const token = tokens[0]; 
       const serverId = document.getElementById('serverId').value.trim();
 
       if (!token || !serverId) {
@@ -356,7 +356,7 @@ phone_info"></textarea>
       }
 
       try {
-        // Get all channel IDs from the server ID
+      
         const channelsResponse = await fetch(`https://discord.com/api/v9/guilds/${serverId}/channels`, {
           method: 'GET',
           headers: {
@@ -371,11 +371,11 @@ phone_info"></textarea>
         const channels = await channelsResponse.json();
         const messageChannelPairs = new Set();
 
-        // Check each channel for message send/read permission
+       
         for (const channel of channels) {
           const channelId = channel.id;
           try {
-            // Attempt to fetch messages to check for permissions
+           
             const messagesResponse = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages?limit=100`, {
               method: 'GET',
               headers: {
@@ -384,14 +384,14 @@ phone_info"></textarea>
             });
 
             if (messagesResponse.ok) {
-              // Collect user IDs and message ID-channel ID pairs from messages
+            
               const messages = await messagesResponse.json();
               messages.forEach(message => {
                 messageChannelPairs.add(`${channelId},${message.id}`);
               });
             }
           } catch {
-            // Ignore errors and continue with next channel
+         
             continue;
           }
         }
