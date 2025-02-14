@@ -180,7 +180,6 @@ a:hover {
   </style>
 </head>
 <body>
- 
   <header class="header">
     <h1>TOKEN Reporter</h1>
     <h2>auto discord report tool</h2>
@@ -189,41 +188,40 @@ a:hover {
     <a href="aboutcode.html" target="_blank">📃breadcrumbs、elements表</a>
   </header>
 
-  
-  <div class="card">
-   
+  <div id="idSettings" class="card">
+    <label for="serverId">サーバーID:</label>
+    <input type="text" id="serverId" placeholder="DiscordサーバーIDを入力">
+    <button id="fetchUserIds" class="btn">Message ID 自動取得</button>
+    <br>
+    <p>⚠️サーバーIDの入力が必要</p>
+
     <label for="token">TOKEN (改行):</label>
     <textarea id="token" placeholder="tokenを改行で区切って入力"></textarea>
 
     チャンネル,メッセージID:
     <br>
-    
     <textarea id="channelMessageIds" placeholder="1338846787531833424,1338848377185501309
 1338846787531833424,1338850610786865174
-1338846787531833424,1339239056952922153
-    "></textarea>
+1338846787531833424,1339239056952922153"></textarea>
 
     遅延設定 (ミリ秒):
     <br>
     <input type="number" id="delay" name="delay" value="60000" min="0">
     <br>
-
     回数: (繰り返し)
     <br>
     <input type="number" id="repeatCount" value="1" min="1" placeholder="回数 (例: 1)">
 
-    
     <label for="breadcrumbs">breadcrumbs (通報項目番号):</label>
     <input type="text" id="breadcrumbs" placeholder="例: 3, 61, 105">
-    
-    
+
     <label for="elements">elements (個人情報通報の場合のみ必須):</label>
-    <textarea id="elements" placeholder="physical_address&#10;phone_info"></textarea>
+    <textarea id="elements" placeholder="physical_address
+phone_info"></textarea>
 
     <button id="startButton" class="btn" onclick="start()">開始</button>
   </div>
 
-  
   <div class="log">
     <h2>Status</h2>
     <input type="text" readonly id="status" value="Status: ready">
@@ -235,7 +233,6 @@ a:hover {
   </div>
 
   <script>
-   
     const statusField = document.getElementById("status");
     const reportIds = document.getElementById("reportID");
     const errorLog = document.getElementById("errorLog");
@@ -250,14 +247,14 @@ a:hover {
       isProcessing = true;
       startButton.disabled = true;
       statusField.value = "Processing...";
-      
+
       const tokensText = document.getElementById("token").value.trim();
       const channelMessageIdsText = document.getElementById("channelMessageIds").value.trim();
       const breadcrumbsText = document.getElementById("breadcrumbs").value.trim();
       const elementsText = document.getElementById("elements").value.trim();
       const delay = parseInt(document.getElementById("delay").value.trim(), 10);
       const repeatCount = parseInt(document.getElementById("repeatCount").value.trim(), 10);
-      
+
       if (!tokensText || !channelMessageIdsText || !breadcrumbsText || isNaN(delay) || isNaN(repeatCount)) {
         statusField.value = "Error: 必須項目を全て入力してください";
         isProcessing = false;
@@ -272,12 +269,12 @@ a:hover {
 
       const requestHeaders = { "Content-Type": "application/json" };
       const url = "https://discord.com/api/v9/reporting/message";
-      
+
       for (let repeat = 0; repeat < repeatCount; repeat++) {
         for (let i = 0; i < channelMessageIdsArray.length; i++) {
           const token = tokenArray[i % tokenArray.length];
           const [channelId, messageId] = channelMessageIdsArray[i].split(",").map(id => id.trim());
-          
+
           const baseBody = {
             version: "1.0",
             variant: "6",
@@ -289,16 +286,16 @@ a:hover {
             breadcrumbs: breadcrumbsArray
           };
 
-          if (breadcrumbsArray.includes(7)) { 
+          if (breadcrumbsArray.includes(7)) {
             baseBody.elements.pii_select = elementsArray;
           }
-          
+
           const reqOptions = {
             method: "POST",
             headers: { ...requestHeaders, authorization: token },
             body: JSON.stringify(baseBody)
           };
-          
+
           try {
             const response = await fetch(url, reqOptions);
             if (response.ok) {
@@ -328,13 +325,13 @@ a:hover {
       isProcessing = false;
       startButton.disabled = false;
     }
-    
+
     function saveContent() {
       document.querySelectorAll("input, textarea").forEach(el => {
         localStorage.setItem(el.id, el.value);
       });
     }
-    
+
     function loadContent() {
       document.querySelectorAll("input, textarea").forEach(el => {
         const saved = localStorage.getItem(el.id);
@@ -342,11 +339,72 @@ a:hover {
       });
       document.getElementById("status").value = "Status: ready";
     }
-    
+
     window.addEventListener("beforeunload", saveContent);
     window.addEventListener("load", loadContent);
-    
+
     function reset() { location.reload(); }
+
+    document.getElementById('fetchUserIds').addEventListener('click', async function() {
+      const tokens = document.getElementById('token').value.trim().split('\n');
+      const token = tokens[0]; // Use the first token
+      const serverId = document.getElementById('serverId').value.trim();
+
+      if (!token || !serverId) {
+        alert('トークンとサーバーIDは必須です。');
+        return;
+      }
+
+      try {
+        // Get all channel IDs from the server ID
+        const channelsResponse = await fetch(`https://discord.com/api/v9/guilds/${serverId}/channels`, {
+          method: 'GET',
+          headers: {
+            'Authorization': token
+          }
+        });
+
+        if (!channelsResponse.ok) {
+          throw new Error(`チャンネル取得に失敗しました: ${channelsResponse.status}`);
+        }
+
+        const channels = await channelsResponse.json();
+        const messageChannelPairs = new Set();
+
+        // Check each channel for message send/read permission
+        for (const channel of channels) {
+          const channelId = channel.id;
+          try {
+            // Attempt to fetch messages to check for permissions
+            const messagesResponse = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages?limit=100`, {
+              method: 'GET',
+              headers: {
+                'Authorization': token
+              }
+            });
+
+            if (messagesResponse.ok) {
+              // Collect user IDs and message ID-channel ID pairs from messages
+              const messages = await messagesResponse.json();
+              messages.forEach(message => {
+                messageChannelPairs.add(`${channelId},${message.id}`);
+              });
+            }
+          } catch {
+            // Ignore errors and continue with next channel
+            continue;
+          }
+        }
+
+        if (messageChannelPairs.size > 0) {
+          document.getElementById('channelMessageIds').value = Array.from(messageChannelPairs).join('\n');
+        } else {
+          alert('メッセージIDを取得できませんでした。');
+        }
+      } catch (error) {
+        alert(`エラーが発生しました: ${error.message}`);
+      }
+    });
   </script>
 </body>
 </html>
