@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Discord Report Tool</title>
+  <style>
+        
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #121212;
+  color: #e0e0e0; 
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+h1, h2, h3 { margin: 0; }
+
+
+.header {
+  width: 100%; 
+  max-width: 800px; 
+  background: linear-gradient(135deg, #303030, #292929);
+  color: #fff;
+  padding: 30px 20px;
+  text-align: left; 
+  border-radius: 8px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.header h1 { font-size: 2.5rem; font-weight: 700; }
+.header h2 { font-size: 1.2rem; font-weight: 300; margin-top: 8px; }
+
+
+.card {
+  background: #1e1e1e; 
+  width: 100%;
+  max-width: 800px;
+  padding: 25px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+.card label { display: block; margin-bottom: 5px; font-weight: 500; color: #e0e0e0; }
+.card input[type="text"],
+.card textarea {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 1px solid #333;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  background: #333; 
+  color: #e0e0e0;
+}
+.card input:focus,
+.card textarea:focus { border-color: #4CAF50; outline: none;  }
+.card textarea { resize: vertical; min-height: 100px; }
+.btn {
+  display: inline-block;
+  background: #5c5c5c;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+  width: 100%;
+}
+.btn:disabled { background: #5a5a5a; cursor: not-allowed; }
+.btn:hover:not(:disabled) { background: #29a12d; } 
+
+
+.accordion {
+  border: 1px solid #444; 
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+.accordion.nested {
+  margin: 10px 0 0 15px;
+  border-color: #bbb;
+}
+.accordion-header {
+  background: #333; 
+  padding: 15px 20px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.3s;
+}
+.accordion-header:hover { background: #444; }
+.accordion-header h3 { margin: 0; font-size: 1rem; color: #e0e0e0; }
+.accordion-header .arrow { transition: transform 0.3s; font-size: 1.2rem; }
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: #222; 
+  padding: 0 20px;
+}
+.accordion-content.open { padding: 15px 20px; overflow-y: auto; }
+.accordion-content label { display: block; margin-bottom: 10px; font-weight: 400; cursor: pointer; color: #e0e0e0; }
+.accordion-content label input { margin-right: 5px; }
+
+
+.log {
+  background: #1e1e1e; 
+  width: 100%;
+  max-width: 800px;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+.log h2 { font-size: 1.1rem; color: #5a5a5a; margin-bottom: 10px; }
+.log input[type="text"] {
+  background: #333; 
+  border: none;
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  color: #e0e0e0;
+}
+.log ul { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+.log ul li { padding: 5px 0; border-bottom: 1px solid #444; font-size: 0.9rem; color: #e0e0e0; }
+.log ul li:last-child { border-bottom: none; }
+.log ul li.error { color: #e53935; font-weight: 500; }
+
+
+@media (max-width: 480px) {
+  .header h1 { font-size: 2rem; }
+  .header h2 { font-size: 1rem; }
+}
+
+
+input[type="number"],
+input[type="text"],
+textarea {
+  background: #333; 
+  color: #e0e0e0; 
+  border: 1px solid #444; 
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  transition: border-color 0.3s;
+}
+input[type="number"]:focus,
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #4CAF50; 
+  outline: none;
+}
+label {
+  color: #e0e0e0; 
+}
+
+a {
+  color: #34a337; 
+  text-decoration: none; 
+  transition: color 0.3s; 
+}
+a:hover {
+  color: #66BB6A;
+}
+
+  
+  </style>
+</head>
+<body>
+ 
+  <header class="header">
+    <h1>TOKEN Reporter</h1>
+    <h2>auto discord report tool</h2>
+    <a href="https://greasyfork.org/ja/scripts/526248-discord-message-id-extractor/code" target="_blank">🚀メッセージID取得(拡張機能)</a>
+    <br>
+    <a href="aboutcode.html" target="_blank">📃breadcrumbs、elements表</a>
+  </header>
+
+  
+  <div class="card">
+   
+    <label for="token">TOKEN (改行):</label>
+    <textarea id="token" placeholder="tokenを改行で区切って入力"></textarea>
+
+    チャンネル,メッセージID:
+    <br>
+    
+    <textarea id="channelMessageIds" placeholder="1338846787531833424,1338846787531833424
+    1338846787531833424,1338848377185501309
+    "></textarea>
+
+    遅延設定 (ミリ秒):
+    <br>
+    <input type="number" id="delay" name="delay" value="60000" min="0">
+    <br>
+
+    回数: (繰り返し)
+    <br>
+    <input type="number" id="repeatCount" value="1" min="1" placeholder="回数 (例: 1)">
+
+    
+    <label for="breadcrumbs">breadcrumbs (通報項目番号):</label>
+    <input type="text" id="breadcrumbs" placeholder="例: 3, 61, 105">
+    
+    
+    <label for="elements">elements (個人情報通報の場合のみ必須):</label>
+    <textarea id="elements" placeholder="physical_address&#10;phone_info"></textarea>
+
+    <button id="startButton" class="btn" onclick="start()">開始</button>
+  </div>
+
+  
+  <div class="log">
+    <h2>Status</h2>
+    <input type="text" readonly id="status" value="Status: ready">
+    <h2>reportID</h2>
+    <ul id="reportID"></ul>
+    <h2>Error Log</h2>
+    <ul id="errorLog"></ul>
+    <button class="btn" onclick="reset()">ログのリセット</button>
+  </div>
+
+  <script>
+   
+    const statusField = document.getElementById("status");
+    const reportIds = document.getElementById("reportID");
+    const errorLog = document.getElementById("errorLog");
+    const startButton = document.getElementById("startButton");
+    let isProcessing = false;
+
+    async function start() {
+      if (isProcessing) {
+        statusField.value = "Error: 既に処理中です";
+        return;
+      }
+      isProcessing = true;
+      startButton.disabled = true;
+      statusField.value = "Processing...";
+      
+      const tokensText = document.getElementById("token").value.trim();
+      const channelMessageIdsText = document.getElementById("channelMessageIds").value.trim();
+      const breadcrumbsText = document.getElementById("breadcrumbs").value.trim();
+      const elementsText = document.getElementById("elements").value.trim();
+      const delay = parseInt(document.getElementById("delay").value.trim(), 10);
+      const repeatCount = parseInt(document.getElementById("repeatCount").value.trim(), 10);
+      
+      if (!tokensText || !channelMessageIdsText || !breadcrumbsText || isNaN(delay) || isNaN(repeatCount)) {
+        statusField.value = "Error: 必須項目を全て入力してください";
+        isProcessing = false;
+        startButton.disabled = false;
+        return;
+      }
+
+      const tokenArray = tokensText.split("\n").filter(t => t.trim() !== "");
+      const channelMessageIdsArray = channelMessageIdsText.split("\n").filter(cm => cm.trim() !== "");
+      const breadcrumbsArray = breadcrumbsText.split(",").map(b => parseInt(b.trim()));
+      const elementsArray = elementsText ? elementsText.split("\n").filter(e => e.trim() !== "") : [];
+
+      const requestHeaders = { "Content-Type": "application/json" };
+      const url = "https://discord.com/api/v9/reporting/message";
+      
+      for (let repeat = 0; repeat < repeatCount; repeat++) {
+        for (let i = 0; i < channelMessageIdsArray.length; i++) {
+          const token = tokenArray[i % tokenArray.length];
+          const [channelId, messageId] = channelMessageIdsArray[i].split(",").map(id => id.trim());
+          
+          const baseBody = {
+            version: "1.0",
+            variant: "6",
+            language: "en",
+            elements: {},
+            channel_id: channelId,
+            message_id: messageId,
+            name: "message",
+            breadcrumbs: breadcrumbsArray
+          };
+
+          if (breadcrumbsArray.includes(7)) { 
+            baseBody.elements.pii_select = elementsArray;
+          }
+          
+          const reqOptions = {
+            method: "POST",
+            headers: { ...requestHeaders, authorization: token },
+            body: JSON.stringify(baseBody)
+          };
+          
+          try {
+            const response = await fetch(url, reqOptions);
+            if (response.ok) {
+              const resJson = await response.json();
+              statusField.value = "success: " + resJson.report_id;
+              const li = document.createElement("li");
+              li.textContent = "reportID: " + resJson.report_id + " (token: " + token + ")";
+              reportIds.appendChild(li);
+            } else {
+              const errorData = await response.json();
+              statusField.value = "error: " + errorData.message + " (token: " + token + ")";
+              const li = document.createElement("li");
+              li.classList.add("error");
+              li.textContent = errorData.message + " (token: " + token + ")";
+              errorLog.appendChild(li);
+            }
+          } catch (e) {
+            statusField.value = "error: " + e.message + " (token: " + token + ")";
+            const li = document.createElement("li");
+            li.classList.add("error");
+            li.textContent = e.message + " (token: " + token + ")";
+            errorLog.appendChild(li);
+          }
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+      isProcessing = false;
+      startButton.disabled = false;
+    }
+    
+    function saveContent() {
+      document.querySelectorAll("input, textarea").forEach(el => {
+        localStorage.setItem(el.id, el.value);
+      });
+    }
+    
+    function loadContent() {
+      document.querySelectorAll("input, textarea").forEach(el => {
+        const saved = localStorage.getItem(el.id);
+        if (saved) el.value = saved;
+      });
+      document.getElementById("status").value = "Status: ready";
+    }
+    
+    window.addEventListener("beforeunload", saveContent);
+    window.addEventListener("load", loadContent);
+    
+    function reset() { location.reload(); }
+  </script>
+</body>
+</html>
