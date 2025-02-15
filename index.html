@@ -189,17 +189,17 @@ a:hover {
   </header>
 
   <div id="idSettings" class="card">
+    
+    <label for="token">TOKEN:</label>
+    <textarea id="token" placeholder="tokenを改行で区切って入力"></textarea>
     <label for="serverId">サーバーID:</label>
     <input type="text" id="serverId" placeholder="DiscordサーバーIDを入力">
+    <label for="channelIds">チャンネルID (取得):</label>
+    <textarea id="channelIds" placeholder="メッセージIDを取得するチャンネルIDのみを改行で区切って入力 記入しない場合は全てのチャンネルから取得"></textarea>
     <button id="fetchUserIds" class="btn">Message ID 自動取得</button>
     <br>
-    <p>⚠️サーバーIDの入力が必要</p>
-
-    <label for="token">TOKEN (改行):</label>
-    <textarea id="token" placeholder="tokenを改行で区切って入力"></textarea>
-
-    チャンネル,メッセージID:
     <br>
+    チャンネル,メッセージID:
     <textarea id="channelMessageIds" placeholder="1338846787531833424,1338848377185501309
 1338846787531833424,1338850610786865174
 1338846787531833424,1339239056952922153"></textarea>
@@ -349,60 +349,71 @@ phone_info"></textarea>
       const tokens = document.getElementById('token').value.trim().split('\n');
       const token = tokens[0]; 
       const serverId = document.getElementById('serverId').value.trim();
+      const channelIds = document.getElementById('channelIds').value.trim().split('\n').filter(id => id.trim() !== "");
 
       if (!token || !serverId) {
         alert('トークンとサーバーIDは必須です。');
         return;
       }
 
-      try {
-      
-        const channelsResponse = await fetch(`https://discord.com/api/v9/guilds/${serverId}/channels`, {
-          method: 'GET',
-          headers: {
-            'Authorization': token
-          }
-        });
+      let channels = [];
 
-        if (!channelsResponse.ok) {
-          throw new Error(`チャンネル取得に失敗しました: ${channelsResponse.status}`);
-        }
-
-        const channels = await channelsResponse.json();
-        const messageChannelPairs = new Set();
-
-       
-        for (const channel of channels) {
-          const channelId = channel.id;
-          try {
-           
-            const messagesResponse = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages?limit=100`, {
-              method: 'GET',
-              headers: {
-                'Authorization': token
-              }
-            });
-
-            if (messagesResponse.ok) {
-            
-              const messages = await messagesResponse.json();
-              messages.forEach(message => {
-                messageChannelPairs.add(`${channelId},${message.id}`);
-              });
+      if (channelIds.length === 0) {
+        try {
+          const channelsResponse = await fetch(`https://discord.com/api/v9/guilds/${serverId}/channels`, {
+            method: 'GET',
+            headers: {
+              'Authorization': token
             }
-          } catch {
-         
-            continue;
-          }
-        }
+          });
 
-        if (messageChannelPairs.size > 0) {
-          document.getElementById('channelMessageIds').value = Array.from(messageChannelPairs).join('\n');
-        } else {
-          alert('メッセージIDを取得できませんでした。');
+          if (!channelsResponse.ok) {
+            throw new Error(`チャンネル取得に失敗しました: ${channelsResponse.status}`);
+          }
+
+          channels = await channelsResponse.json();
+        } catch (error) {
+          alert(`エラーが発生しました: ${error.message}`);
+          return;
         }
-      } catch (error) {
-        alert(`エラーが発生しました: ${error.message}`);
+      } else {
+        channels = channelIds.map(id => ({ id }));
+      }
+
+      const messageChannelPairs = new Set();
+      let processedChannels = 0;
+
+      for (const channel of channels) {
+        const channelId = channel.id;
+        try {
+          const messagesResponse = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages?limit=100`, {
+            method: 'GET',
+            headers: {
+              'Authorization': token
+            }
+          });
+
+          if (messagesResponse.ok) {
+            const messages = await messagesResponse.json();
+            messages.forEach(message => {
+              messageChannelPairs.add(`${channelId},${message.id}`);
+            });
+          }
+
+          processedChannels++;
+          statusField.value = `Processing... ${Math.round((processedChannels / channels.length) * 100)}%`;
+
+        } catch (error) {
+          continue;
+        }
+      }
+
+      if (messageChannelPairs.size > 0) {
+        document.getElementById('channelMessageIds').value = Array.from(messageChannelPairs).join('\n');
+        statusField.value = "Message IDs fetched successfully.";
+      } else {
+        alert('メッセージIDを取得できませんでした。');
+        statusField.value = "Error: メッセージIDを取得できませんでした。";
       }
     });
   </script>
